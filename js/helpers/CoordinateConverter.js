@@ -55,8 +55,10 @@ function lerpCoords(longlat0, longlat1, per) {
 function getNewCoord(longlat, metersX, metersY) {
   let r_earth = 6378; // km
   let newCoord = [];
-  newCoord[0] = longlat[0] + (metersY/1000 / r_earth) * (180 / Math.PI) / Math.cos(longlat[1] * Math.PI/180);
-  newCoord[1] = longlat[1] + (metersX/1000 / r_earth) * (180 / Math.PI);
+  newCoord[0] = longlat[0] + (metersX/1000 / r_earth) * (180 / Math.PI) / Math.cos(longlat[1] * Math.PI/180);
+  
+  // lat <----------->, changes with y
+  newCoord[1] = longlat[1] + (metersY/1000 / r_earth) * (180 / Math.PI);
   return newCoord;
 }
 
@@ -69,7 +71,7 @@ function getCoordFromPoint(start, zoom, x, y) {
     var meters = zoomLevelToDis(zoom, start[1]);
     var metersX = x * meters;
     var metersY = y * meters;
-    var c = getNewCoord(start, metersY, metersX)
+    var c = getNewCoord(start, metersX, metersY)
     return c;
 }
 

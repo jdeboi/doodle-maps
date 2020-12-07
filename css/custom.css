@@ -1,66 +1,266 @@
 body {
-  
-  background-color: #fff1c2; 
-  /* //rgb(59,	103,	99	); */
-  color: #61443e;
+  background-color: white;
+  color: black;
   font-family: Monospace;
   line-height: 24px;
   min-height: 100%;
-  font-family: sketchFont, monospace;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+#mainNav .navbar-brand {
+  font-family: sketch3D, monospace;
+  font-size: 2rem;
+}
+
+h1 {
+  font-family: sketch3D, sketchFont, monospace;
+}
+
+h5,
+h6 {
+  font-family: monospace;
+  font-weight: 900;
+}
+h5 {
+  font-size: 2rem;
+}
+h6 {
+  font-size: 1.4rem;
+}
+
+p {
+  /* font-weight: 900; */
+}
+
+.btn {
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 1.3rem;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  font-weight: 900;
 }
 
 a {
-  color: #a06851;
+  color: #3910c2;
 }
-
 
 #loading {
   display: none;
 }
 
-#mapContainer {
-  display: none;
-  position: absolute;
+.mapboxgl-canvas-container {
+  pointer-events: none;
   height: 100%;
   width: 100%;
-  top: 0;
-  left: 0;
 }
 
-#map {
-  position:absolute;
-  width: 100%;
-  height: 100%;
-  z-index: -100;
+canvas.mapboxgl-canvas {
+  height: 100vh;
+  width: 100vw;
+}
+
+#navMap canvas.mapboxgl-canvas {
+  pointer-events: all;
+}
+
+#defaultCanvas0 {
+  pointer-events: none;
 }
 
 /* Scale canvas with resize attribute to full size */
-canvas[resize] {
-  min-width: 200px;
-  max-width: 300px;
+
+#mapContainer {
   height: 100%;
+  /* width: auto; */
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+#doodleContainer {
+  /* display: none; */
+  visibility: hidden;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  pointer-events: all;
   z-index: 100;
+}
+
+#doodleContainer canvas[resize] {
+  /* min-width: 200px;
+  max-width: 300px; */
+  /* position: absolute; */
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  /* top: 0;
+  left: 0; */
 }
 
 svg {
   position: absolute;
-  min-width: 200px;
-  max-width: 300px;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
 }
 
+#instructionsContainer {
+  position: absolute;
+  top: 0px;
+  left: 300px;
+  padding: 100px;
+  color: black;
+  background: white;
+  max-width: 90%;
+  box-sizing: border-box;
+  max-height: 100%;
+  display: none;
+  overflow: scroll;
+}
 
+.deets {
+  color: rgb(112, 112, 112);
+}
+
+#sideBar {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  width: 300px;
+  display: none;
+  z-index: 300;
+  pointer-events: all;
+
+  color: black;
+  box-shadow: 10px 10px 30px rgb(124, 124, 124);
+
+  position: absolute;
+  background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+  background-size: 2200px 2200px;
+
+  -webkit-animation: rainbow 18s ease infinite;
+  -z-animation: rainbow 18s ease infinite;
+  -o-animation: rainbow 18s ease infinite;
+  animation: rainbow 18s ease infinite;
+}
+
+@-webkit-keyframes rainbow {
+  0% {
+    background-position: 0% 82%;
+  }
+  50% {
+    background-position: 100% 19%;
+  }
+  100% {
+    background-position: 0% 82%;
+  }
+}
+@-moz-keyframes rainbow {
+  0% {
+    background-position: 0% 82%;
+  }
+  50% {
+    background-position: 100% 19%;
+  }
+  100% {
+    background-position: 0% 82%;
+  }
+}
+@-o-keyframes rainbow {
+  0% {
+    background-position: 0% 82%;
+  }
+  50% {
+    background-position: 100% 19%;
+  }
+  100% {
+    background-position: 0% 82%;
+  }
+}
+@keyframes rainbow {
+  0% {
+    background-position: 0% 82%;
+  }
+  50% {
+    background-position: 100% 19%;
+  }
+  100% {
+    background-position: 0% 82%;
+  }
+}
+
+.sideBar-item {
+  /* border: 3px solid black;
+  box-shadow: 10px 20px 30px black;
+  border-radius: 8px; */
+  /* background-color:white; */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#tripDetails {
+  padding-top: 70px;
+  flex: 1;
+}
+
+#tripDetails button {
+  margin-top: 20px;
+}
+
+#duration {
+  font-size: 1.3rem;
+}
+
+#distance {
+  font-size: 1rem;
+}
+
+#directionsButton {
+  display: none;
+}
+
+#navMapContainer {
+  /* background: white; */
+  /* bottom: 50px;
+  left: 50px;  */
+  margin-top: 70px;
+  height: 350px;
+  flex: 0;
+  /* text-align: center; */
+}
+
+#navMapContainer h6 {
+  padding-top: 10px;
+}
 
 #navMap {
-  z-index: 300;
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  width: 200px;
-  height: 200px;
-  pointer-events: all;
-  border-radius: 8px;
-  display: none;
+  width: 256px;
+  height: 256px;
+  border: 2px solid black;
+  border-radius: 6px;
 }
 
 #info {
@@ -81,9 +281,25 @@ header.masthead {
 
 #faqModal {
   display: none;
+  color: black;
 }
 
 @font-face {
   font-family: sketchFont;
   src: url(../fonts/KBSketch.ttf);
+}
+
+@font-face {
+  font-family: sketch3D;
+  src: url(../fonts/Sketch3D.otf);
+}
+
+@font-face {
+  font-family: sketchy;
+  src: url(../fonts/Sketchy.otf);
+}
+
+@font-face {
+  font-family: sketchMatch;
+  src: url(../fonts/SketchMatch.ttf);
 }

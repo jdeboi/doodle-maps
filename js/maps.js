@@ -1,106 +1,147 @@
-const DEV_MODE = true;
+
+// https://www.mapbox.com/studio/account/tokens/
+const key = keys.mapbox;
+const DEV_MODE = false;
 let myMap, navMap;
 const zoomMain = 14;
 const zoomMini = 11.7;
-const key = keys.mapbox;
-let center;
-
 let isDrawing = false;
+var center;
+
+let startAddress, endAddress, distance, duration, instructions;
+// Create an instance of MapboxGL
+// const mappa = new Mappa('MapboxGL', key);
+// const mappaMini = new Mappa('MapboxGL', key);
+
+// let canvas;
+
+
+initMaps();
 
 if (DEV_MODE) {
-  initMaps();
+    showMaps();
 }
 
 function initMaps() {
-  showMaps();
-  setCenter()
-    .then(addMaps)
-    .then(() => {
-      isDrawing = true;
-    })
-    .catch((error) => {
-      alert("Sorry, there was an error: " + error);
-      console.log(error);
-    })
+    initCenter()
+        .then(addMaps)
+        .then(() => {
+            isDrawing = true;
+        })
+        .catch((error) => {
+            alert("Sorry, there was an error: " + error);
+            console.log(error);
+        })
 }
 
+function getCenter() {
+    return center;
+}
 
-////////////////////////////////////////////////////////////////////////////////////
-// ADD MAPS
-////////////////////////////////////////////////////////////////////////////////////
+function getCenterArray() {
+    return [center.lng, center.lat];
+}
 
-function addMaps() {
-  if (DEV_MODE) console.log("adding maps");
-  return Promise.all([addMainMap(center), addNavMap(center)]);
+function setCenter(lng, lat) {
+    center.lng = lng;
+    center.lat = lat;
+}
+
+function addMaps(c) {
+    return Promise.all([addMainMap(c), addNavMap(c)]);
 }
 
 function addMainMap(center) {
-  return new Promise((resolve, reject) => {
-    mapboxgl.accessToken = key;
-    myMap = new mapboxgl.Map({
-      container: 'map',
-      style: keys.mapboxStyle,
-      center: center, // starting position
-      zoom: zoomMain
+    return new Promise((resolve, reject) => {
+        mapboxgl.accessToken = key;
+        myMap = new mapboxgl.Map({
+            container: 'map',
+            style: "mapbox://styles/jdeboi/ck7f9ph6i0sr61irv7crq6sno",
+            center: center, // starting position
+            zoom: zoomMain
+        });
+        myMap.dragRotate.disable();
+        myMap.touchZoomRotate.disableRotation();
+        myMap.on('load', () => {
+            addLine(myMap, "route", "#fff", 8);
+            resolve("loaded");
+        })
+
     });
-    myMap.dragRotate.disable();
-    myMap.touchZoomRotate.disableRotation();
-    myMap.on('load', () => {
-      addLine("route", "#fff");
-      resolve("loaded");
-    })
-  });
-
-  // let boundFactor = 0.1;
-  // let bounds = [[home[0] - boundFactor, home[1] - boundFactor], [home[0] + boundFactor, home[1] + boundFactor]];
-  // myMap.setMaxBounds(bounds);
-
-  // disable map rotation using right click + drag
-
 }
+
+// function addMap(center) {
+//     // Options for map
+//     let options = {
+//         lat: center.lat,
+//         lng: center.lng,
+//         zoom: zoomMain,
+//         style: 'mapbox://styles/mapbox/traffic-night-v2',
+//     };
+//     return new Promise((resolve, reject) => {
+//         myMap = mappa.tileMap(options);
+//         myMap.overlay(canvas, () => {
+//             myMap.map.dragRotate.disable();
+//             myMap.map.touchZoomRotate.disableRotation();
+//             myMap.map.scrollZoom.disable();
+//             myMap.map.flyTo({
+//                 center: [center.lng, center.lat],
+//                 zoom: zoomMain,
+//                 essential: true
+//             });
+//             resolve("finished");
+//         });
+//     });
+// }
 
 function addNavMap(center) {
-  return new Promise((resolve, reject) => {
-    mapboxgl.accessToken = key;
-    navMap = new mapboxgl.Map({
-      container: 'navMap',
-      style: 'mapbox://styles/jdeboi/cki7rn91i675t19l7ckudb7e5',
-      center: [center.lng, center.lat],
-      zoom: zoomMini
+    return new Promise((resolve, reject) => {
+        mapboxgl.accessToken = key;
+        navMap = new mapboxgl.Map({
+            container: 'navMap',
+            style: 'mapbox://styles/jdeboi/ck6ygg96d16gg1im66n6i13ob',
+            center: [center.lng, center.lat],
+            zoom: zoomMini
+        });
+
+
+
+        // disable map rotation using right click + drag
+        navMap.dragRotate.disable();
+        navMap.touchZoomRotate.disableRotation();
+
+        navMap.on('click', function (e) {
+            isDrawing = false;
+            if (DEV_MODE) console.log("moving map");
+            setCenter(e.lngLat.wrap().lng, e.lngLat.wrap().lat);
+            console.log("SHYYY", center)
+            navMap.flyTo({
+                center: getCenterArray(),
+                zoom: zoomMini,
+                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+            });
+
+            myMap.flyTo({
+                center: getCenterArray(),
+                zoom: zoomMain,
+                essential: true
+            });
+
+            myMap.once('moveend', () => {
+                if (DEV_MODE) console.log("done moving big map");
+                isDrawing = true;
+            })
+        });
+
+        navMap.on('load', () => {
+            addLine(navMap, "route", "#fff", 4);
+            resolve("loaded");
+        });
     });
-
-    // disable map rotation using right click + drag
-    navMap.dragRotate.disable();
-    navMap.touchZoomRotate.disableRotation();
-
-    navMap.on('click', function (e) {
-      isDrawing = false;
-      if (DEV_MODE) console.log("moving map");
-      center = { lng: e.lngLat.wrap().lng, lat: e.lngLat.wrap().lat };
-      navMap.flyTo({
-        center: [center.lng, center.lat],
-        zoom: zoomMini,
-        essential: true // this animation is considered essential with respect to prefers-reduced-motion
-      });
-
-      myMap.flyTo({
-        center: [center.lng, center.lat],
-        zoom: zoomMain,
-        essential: true
-      });
-
-      myMap.once('moveend', () => {
-        if (DEV_MODE) console.log("done moving big map");
-        isDrawing = true;
-      })
-    });
-
-    navMap.on('load', () => {
-      resolve("loaded");
-    });
-  });
 
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 // LOAD MAP CENTER
@@ -108,46 +149,46 @@ function addNavMap(center) {
 
 // try to get browser gps
 // otherwise, return NOLA coords
-async function setCenter() {
-  // Will resolve after 5s
-  let t = DEV_MODE ? 100 : 5000;
-  let promiseTimeout = new Promise((resolve, reject) => {
-    let wait = setTimeout(() => {
-      clearTimeout(wait);
-      center = getNolaCenter();
-      resolve(center);
-    }, t)
-  })
-  return Promise.race([
-    promiseTimeout,
-    setBrowserCenter()
-  ]);
+async function initCenter() {
+    // Will resolve after 5s
+    let t = DEV_MODE ? 100 : 5000;
+    let promiseTimeout = new Promise((resolve, reject) => {
+        let wait = setTimeout(() => {
+            clearTimeout(wait);
+            center = getNolaCenter();
+            resolve(center);
+        }, t)
+    })
+    return Promise.race([
+        promiseTimeout,
+        setBrowserCenter()
+    ]);
 }
 
 async function setBrowserCenter() {
-  try {
-    let position = await getPosition();
-    if (DEV_MODE) console.log("POS", position);
-    center = { lng: position.coords.longitude, lat: position.coords.latitude };
-    return center;
-  }
-  catch (error) {
-    console.log(error);
-    center = getNolaCenter();
-    return center;
-  }
+    try {
+        let position = await getPosition();
+        if (DEV_MODE) console.log("POS", position);
+        center = { lng: position.coords.longitude, lat: position.coords.latitude };
+        return center;
+    }
+    catch (error) {
+        console.log(error);
+        center = getNolaCenter();
+        return center;
+    }
 }
 
 function getPosition(options) {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject, options);
-  });
+    return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
 }
 
 function getNolaCenter() {
-  let homeLat = 29.9307079;
-  let homeLon = -90.105797;
-  return { lng: homeLon, lat: homeLat };
+    let homeLat = 29.9307079;
+    let homeLon = -90.105797;
+    return { lng: homeLon, lat: homeLat };
 }
 
 ///
@@ -155,39 +196,158 @@ function getNolaCenter() {
 
 
 function setCoordinates(path) {
-  // var metersPerPix = zoomLevelToDis(zoomMain, center[1]);
-  var coords = [];
-  var home = [center.lng, center.lat];
-  for (var i = 0; i < path.segments.length; i++) {
-    var p = path.segments[i];
-    var dx = p._point._x - path.segments[0]._point._x;
-    var dy = -(p._point._y - path.segments[0]._point._y);
-    coords.push(getCoordFromPoint(home, zoomMain, dx, dy))
-  }
-  var numPoints = path.segments.length;
-  if (numPoints > 24 * 5) numPoints = 24 * 5;
+    var coords = [];
+    let start = getCenterArray();
+    var p0 = path.segments[0];
+    let d0x = p0._point._x - window.innerWidth / 2;
+    let d0y = window.innerHeight / 2 - p0._point._y;
+    for (var i = 0; i < path.segments.length; i++) {
+        var p = path.segments[i];
+        var dx = p._point._x - path.segments[0]._point._x;
+        var dy = -(p._point._y - path.segments[0]._point._y);
+        var point = getCoordFromPoint(start, zoomMain, dx + d0x, dy + d0y);
+        coords.push(point);
+    }
 
-  var promises = [];
-  for (var i = 0; i < numPoints; i += 24) {
-    var points = coords.slice(i, i + 24);
-    promises.push(loadDirections(points))
-  }
-  // console.log(promises);
-  Promise.all(promises)
-    .then(function (responses) {
-      // console.log(JSON.parse(responses[0].responseText).routes[0].geometry.coordinates)
-      var coordinates = [];
-      console.log("num api calls", responses.length)
-      for (var j = 0; j < responses.length; j++) {
-        var directions = JSON.parse(responses[j].responseText);
-        directions = directions.routes[0].geometry.coordinates;
+    var numPoints = path.segments.length;
+    if (numPoints > 24 * 5) numPoints = 24 * 5;
 
-        coordinates = coordinates.concat(directions);
-      }
+    var promises = [];
+    for (var i = 0; i < numPoints; i += 24) {
+        var points = coords.slice(i, i + 24);
+        promises.push(loadDirections(points))
+    }
+    // console.log(promises);
+    Promise.all(promises)
+        .then(function (responses) {
+            // console.log(JSON.parse(responses[0].responseText).routes[0].geometry.coordinates)
+            var coordinates = [];
+            instructions = [];
+            console.log("REZ", JSON.parse(responses[0].responseText))
+            startAddress = JSON.parse(responses[0].responseText).routes[0].legs[0].steps[0].name;
+            if (startAddress == "") startAddress = JSON.parse(responses[0].responseText).routes[0].legs[0].steps[0].geometry[0].coordinates;
+            document.getElementById("startAddress").innerText = "start: " + startAddress;
+            let legL = JSON.parse(responses[responses.length - 1].responseText).routes[0].legs.length;
+            let lastLeg = JSON.parse(responses[responses.length - 1].responseText).routes[0].legs[legL - 1];
+            endAddress = lastLeg.steps[lastLeg.steps.length - 1].name;
+            if (endAddress == "") endAddress = lastLeg.steps[lastLeg.steps.length - 1].geometry[0].coordinates;
+            document.getElementById("endAddress").innerText = "end: " + endAddress;
+            distance = 0;
+            duration = 0;
 
-      updateLine("route", coordinates);
-    })
+            console.log("num api calls", responses.length)
+            for (var j = 0; j < responses.length; j++) {
+                var directions = JSON.parse(responses[j].responseText);
+                var route = directions.routes[0];
+
+                distance += route.distance * 0.000621371;
+                duration += route.duration;
+
+                coordinates = coordinates.concat(route.geometry.coordinates);
+                setInstructions(route)
+            }
+            // document.getElementById("instructions").html(directions)
+            distance = Math.floor(distance * 10) / 10;
+            document.getElementById("duration").innerText = getDuration(duration, 2);
+            document.getElementById("distance").innerText = ` (${distance} miles)`;
+
+            updateLine(myMap, "route", coordinates);
+            updateLine(navMap, "route", coordinates);
+
+            document.getElementById("directionsButton").style.display = "block";
+            // console.log("ok", duration, startAddress, endAddress)
+        })
 }
+
+
+
+function setInstructions(route) {
+    if (true) {
+        // directions = JSON.parse(response.responseText).routes[0].geometry.coordinates;
+        // console.log("parsing dir", JSON.parse(response.responseText));
+
+        let legs = route.legs;
+
+        // console.log("legs", legs)
+        for (var i = 0; i < legs.length; i++) {
+            let steps = legs[i].steps;
+            // console.log("steps", steps);
+            for (var j = 0; j < steps.length; j++) {
+                //   let coords = legs[i].steps[j].geometry.coordinates;
+                let ins = steps[j].maneuver;
+                // if (ins.indexOf("You have arrived") < 0)
+                instructions.push({ ins: ins, dis: steps[j].distance, dur: steps[j].duration, step: j });
+                //   for (var k = 0; k < coords.length; k++) {
+                //     directions.push({coord: coords[k], step: j, leg:i});
+                //   }
+            }
+            // var s = steps[i].geometry.coordinates;
+            // coordinates.push(s[0]);//s.length-1])
+
+        }
+    }
+    // instructions.push({ins: {instruction: "You have arrived."}});
+    // return directions;
+    console.log(instructions[0]);
+    htmlInstructions();
+}
+
+function htmlInstructions() {
+    var instructionsDiv = document.getElementById("instructions");
+    instructionsDiv.innerHTML = "";
+    console.log("ins nums", instructions.length)
+    for (const instruction of instructions) {
+        const newDiv = document.createElement("div");
+        if (instruction.ins.type !== "arrive") {
+            const newSpan0 = document.createElement("span");
+            newSpan0.className = "deets";
+            const newSpan1 = document.createElement("span");
+            let dis = Math.floor(instruction.dis * 0.000621371 * 100) / 100 + " miles";
+            let dur = getDuration(instruction.dur, 2);
+            let txt = `${dis} (${dur}): `; //
+            newSpan0.textContent = txt;
+            newSpan1.textContent = instruction.ins.instruction;
+            newDiv.appendChild(newSpan0);
+            newDiv.appendChild(newSpan1);
+            instructionsDiv.appendChild(newDiv);
+        }
+
+    }
+    const newDiv = document.createElement("div"); 
+    newDiv.textContent = "You have arrived!";
+    instructionsDiv.appendChild(newDiv);
+}
+
+function checkDirections(directions) {
+    console.log((numInstruction++) + " check directions")
+    if (DIRECTIONS_ON) {
+        let coordinates = directions.map(x => x.coord);
+        return coordinates;
+    }
+    return null;
+}
+
+function getDuration(seconds, dec) {
+    let mins = +seconds / 60;
+    let hours = mins / 60;
+    let days = hours / 24;
+    //println(days, hours, mins);
+    if (seconds < 60) {
+        seconds = Math.floor(seconds);
+        return seconds + "s";
+    }
+    if (mins < 60) {
+        mins = Math.floor(mins);
+        return mins + " min";
+    }
+    if (days < 1) {
+        let m = mins % 60;
+        let h = Math.floor(hours);
+        return h + " hours " + Math.floor(m) + " min"
+    }
+    return days.toFixed(dec) + " days";
+}
+
 
 ///////////////////////////////////////////////////////////////////
 // directions
@@ -196,98 +356,116 @@ function setCoordinates(path) {
 // https://gomakethings.com/promise-based-xhr/
 function makeRequest(url, method) {
 
-  // Create the XHR request
-  var request = new XMLHttpRequest();
+    // Create the XHR request
+    var request = new XMLHttpRequest();
 
-  // Return it as a Promise
-  return new Promise(function (resolve, reject) {
+    // Return it as a Promise
+    return new Promise(function (resolve, reject) {
 
-    // Setup our listener to process compeleted requests
-    request.onreadystatechange = function () {
+        // Setup our listener to process compeleted requests
+        request.onreadystatechange = function () {
 
-      // Only run if the request is complete
-      if (request.readyState !== 4) return;
+            // Only run if the request is complete
+            if (request.readyState !== 4) return;
 
-      // Process the response
-      if (request.status >= 200 && request.status < 300) {
-        // If successful
-        resolve(request);
-      } else {
-        // If failed
-        reject({
-          status: request.status,
-          statusText: request.statusText
-        });
-      }
+            // Process the response
+            if (request.status >= 200 && request.status < 300) {
+                // If successful
+                resolve(request);
+            } else {
+                // If failed
+                reject({
+                    status: request.status,
+                    statusText: request.statusText
+                });
+            }
 
-    };
-    // Setup our HTTP request
-    request.open(method || 'GET', url, true);
+        };
+        // Setup our HTTP request
+        request.open(method || 'GET', url, true);
 
-    // Send the request
-    request.send();
+        // Send the request
+        request.send();
 
-  });
+    });
 };
 
 function loadDirections(coords) {
-  let coordString = getCoordString(coords);
-  let mode = 'walking';
-  let url = 'https://api.mapbox.com/directions/v5/mapbox/' + mode + '/' + coordString;
-  url += '?steps=true';
-  url += '&geometries=geojson';
-  url += '&continue_straight=true';
-  url += '&access_token=' + mapboxgl.accessToken;
-  return makeRequest(url)
+    let coordString = getCoordString(coords);
+    let mode = 'walking';
+    let url = 'https://api.mapbox.com/directions/v5/mapbox/' + mode + '/' + coordString;
+    url += '?steps=true';
+    url += '&geometries=geojson';
+    url += '&continue_straight=true';
+    url += '&access_token=' + mapboxgl.accessToken;
+    return makeRequest(url)
 }
 
 function getCoordString(coords) {
-  let coordString = "";
-  for (var c = 0; c < coords.length; c++) {
-    coordString += coords[c][0] + "," + coords[c][1];
-    if (c != coords.length - 1) {
-      coordString += ";"
-    }
-  }
-  return coordString;
-}
-
-function addLine(id, color) {
-  myMap.addLayer({
-    "id": id,
-    "type": "line",
-    "source": {
-      "type": "geojson",
-      "data": {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "LineString",
-          "coordinates": []
+    let coordString = "";
+    for (var c = 0; c < coords.length; c++) {
+        coordString += coords[c][0] + "," + coords[c][1];
+        if (c != coords.length - 1) {
+            coordString += ";"
         }
-      }
-    },
-    "layout": {
-      "line-join": "round",
-      "line-cap": "round"
-    },
-    "paint": {
-      "line-color": color,
-      "line-width": 8
     }
-  });
+    return coordString;
 }
 
-function updateLine(id, coords) {
-  if (DEV_MODE) console.log("coords", coords[0], coords[1])
-  var geojson = {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'LineString',
-      coordinates: coords
-    }
-  };
-  myMap.getSource(id).setData(geojson);
+function addLine(map, id, color, sw) {
+    map.addLayer({
+        "id": id,
+        "type": "line",
+        "source": {
+            "type": "geojson",
+            "lineMetrics": true,
+            "data": {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": []
+                }
+            }
+        },
+        "layout": {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        "paint": {
+            "line-color": color,
+            "line-width": sw,
+            'line-gradient': [
+                'interpolate',
+                ['linear'],
+                ['line-progress'],
+                0,
+                'blue',
+                0.1,
+                'royalblue',
+                0.3,
+                'cyan',
+                0.5,
+                'lime',
+                0.7,
+                'yellow',
+                1,
+                'red'
+            ]
+        }
+    });
+}
+
+function updateLine(map, id, coords) {
+    if (DEV_MODE) console.log("coords", coords[0], coords[1])
+    var geojson = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'LineString',
+            coordinates: coords
+        }
+    };
+    map.getSource(id).setData(geojson);
 }
 

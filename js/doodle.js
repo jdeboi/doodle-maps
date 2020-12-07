@@ -1,69 +1,97 @@
-var path, rect, textItem;
-initCanvas();
+// Get a reference to the canvas object
+// $(document).ready(function () {
+// console.log("LOADED")
+var canvas = document.getElementById('doodle');
+canvas.addEventListener('mousedown', down);
+canvas.addEventListener('mouseup', up);
+canvas.addEventListener('mousemove', drag);
+// canvas.addEventListener('resize', resize);
+// Create an empty project and a view for the canvas:
+// paper.setup(canvas);
+// paper.view.viewSize.width = window.innerWidth*2;
+// paper.view.viewSize.height = window.innerHeight*2;
+// console.log("CANVAS", canvas, window.innerWidth*2, window.innerHeight*2);
+// Create a Paper.js Path to draw a line into it:
+var path = new paper.Path();
+// Give the stroke a color
+path.strokeColor = 'white';
+var numMapboxCalls = 5;
+var mouseIsDown = false;
 
-function initCanvas() {
-  if (DEV_MODE) console.log("init canvas");
-  isDrawing = false;
-  path = new Path();
-  rect = new Path.Rectangle({
-    point: [0, 0],
-    size: [view.size.width, view.size.height],
-    strokeColor: 'white',
-    selected: true
-  });
-  // rect.sendToBack();
-  rect.fillColor = '#fff';
+// var textItem = new paper.PointText({
+//     content: 'Click and drag to draw a line.',
+//     point: new paper.Point(20, 120),
+//     fillColor: 'white',
+// });
 
-  textItem = new PointText(new Point(20, 30));
-  textItem.fillColor = 'black';
-  textItem.content = 'Click and drag to draw a line.';
-}
+function down(event) {
+    mouseIsDown = true;
+    if (mapsShown && isDrawing) {
+        // setClick(event.event.screenX, event.event.screenY);
+        // saveDrawCenter = true;
+        // If we produced a path before, deselect it:
+        if (path) {
+            path.removeSegments();
+            path.selected = false;
+        }
+        path.strokeColor = 'white';
 
-function onMouseDown(event) {
-  if (isDrawing) {
-    // If we produced a path before, deselect it:
-    if (path) {
-      path.removeSegments();
-      path.selected = false;
+        // Select the path, so we can see its segment points:
+        path.fullySelected = true;
+
     }
-    path.strokeColor = 'black';
-
-    // Select the path, so we can see its segment points:
-    path.fullySelected = true;
-  }
 }
 
-function onMouseDrag(event) {
-  if (isDrawing) {
-    // Every drag event, add a point to the path at the current
-    // position of the mouse:
-    path.add(event.point);
+function drag(event) {
+    if (mouseIsDown) {
+        if (isDrawing) {
+            // Every drag event, add a point to the path at the current
+            // position of the mouse:
 
-    textItem.content = 'Segment count: ' + path.segments.length;
-  }
+            // console.log(p);
+            var perLeft = .6; // percent of points saved in simplify
+            if (path.segments.length * perLeft < 24 * numMapboxCalls) {
+                path.add(new Point(event.clientX, event.clientY));
+            }
+            // path.add(new Point(event.clientX, event.clientY));
+
+            // textItem.content = 'Segment count: ' + path.segments.length;
+        }
+    }
+
 }
 
-function onMouseUp(event) {
-  if (isDrawing) {
-    var segmentCount = path.segments.length;
+function up(event) {
+    mouseIsDown = false;
+    if (isDrawing) {
+        var segmentCount = path.segments.length;
 
-    // When the mouse is released, simplify it:
-    path.simplify();
-    path.flatten(4);
+        // When the mouse is released, simplify it:
+        path.simplify();
+        path.flatten(4);
 
-    // Select the path, so we can see its segments:
-    // path.fullySelected = false;
-    path.selected = true;
+        // Select the path, so we can see its segments:
+        // path.fullySelected = false;
+        path.selected = true;
 
-    var newSegmentCount = path.segments.length;
-    var difference = segmentCount - newSegmentCount;
-    var percentage = 100 - Math.round(newSegmentCount / segmentCount * 100);
-    // textItem.content = difference + ' of the ' + segmentCount + ' segments were removed. var  ' + percentage + '%';
-    textItem.content = "sketch your wildest adventure!";
-    // why
-    console.log("setting coordinates");
-    setCoordinates(path);
-    
-  }
+        // var newSegmentCount = path.segments.length;
+        // var difference = segmentCount - newSegmentCount;
+        // var percentage = 100 - Math.round(newSegmentCount / segmentCount * 100);
+        // textItem.content = difference + ' of the ' + segmentCount + ' segments were removed. var  ' + percentage + '%';
+        // textItem.content = "sketch your wildest adventure!";
+        // why
+        console.log("setting coordinates");
+
+        setCoordinates(path);
+
+        path.removeSegments();
+        path.selected = false;
+    }
 }
+
+
+
+
+
+// })
 
