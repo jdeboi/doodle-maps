@@ -154,7 +154,7 @@ svg {
 
 .deets {
   color: rgb(112, 112, 112);
-  font-size: .7rem;
+  font-size: 0.7rem;
 }
 
 #sideBarContainer {
@@ -165,6 +165,8 @@ svg {
   height: 350px;
   width: 100%; */
   display: none;
+  position: absolute;
+  top: 0;
 }
 
 #sideBar {
@@ -173,6 +175,9 @@ svg {
 
 #directionsButtonContainerMobile {
   display: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 #directionsButtonMobile {
@@ -224,6 +229,7 @@ svg {
   }
 
   #instructionsContainer {
+    position: absolute;
     top: 0px;
     left: 300px;
     padding: 100px;
