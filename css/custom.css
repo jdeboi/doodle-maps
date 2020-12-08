@@ -140,20 +140,21 @@ svg {
 
 #instructionsContainer {
   position: absolute;
-  top: 0px;
-  left: 300px;
-  padding: 100px;
   color: black;
   background: white;
-  max-width: 90%;
   box-sizing: border-box;
-  max-height: 100%;
   display: none;
   overflow: scroll;
+  max-height: 100%;
+
+  top: 80px;
+  left: 0;
+  padding: 20px;
 }
 
 .deets {
   color: rgb(112, 112, 112);
+  font-size: .7rem;
 }
 
 #sideBarContainer {
@@ -170,6 +171,21 @@ svg {
   visibility: hidden;
 }
 
+#directionsButtonContainerMobile {
+  display: none;
+}
+
+#directionsButtonMobile {
+  position: absolute;
+  z-index: 400;
+  width: 90%;
+  /* left: 50%;
+  margin-left: -25%; */
+  left: 5%;
+  top: 140px;
+}
+
+/* desktop */
 @media (min-width: 500px) {
   #sideBar {
     left: 0;
@@ -195,9 +211,24 @@ svg {
     visibility: visible;
   }
 
+  #directionsButtonMobile {
+    visibility: hidden;
+  }
+
   /* #navMapContainer {
     margin-top: 0px;
   } */
+
+  .geocoder {
+    visibility: hidden;
+  }
+
+  #instructionsContainer {
+    top: 0px;
+    left: 300px;
+    padding: 100px;
+    max-width: 90%;
+  }
 }
 
 .rainbowBackground {

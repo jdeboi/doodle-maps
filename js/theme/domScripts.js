@@ -1,36 +1,37 @@
 var mapsShown = false;
 var showInstructions = false;
 var isMobile = false;
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    setMobile();
-}
-else if (window.innerWidth < 550) {
-    setMobile();
-}
+// if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+//     setMobile();
+// }
+// else if (window.innerWidth < 550) {
+//     setMobile();
+// }
 
 // takePics();
 
 function setMobile() {
-    console.log("MOBILE")
+    // console.log("MOBILE")
     isMobile = true;
     // document.getElementById("introVid").style.display = "none";
     // document.getElementById("header").classList.add("bgimg");
     document.getElementById("sideBarContainer").style.display = "none";
+    document.getElementById("directionsButtonContainerMobile").style.display = "none";
 }
 
 function showMaps() {
+    mapsShown = true;
     // document.getElementById("introVid").style.display = "none";
     document.getElementById("header").style.display = "none";
     document.getElementById("mapContainer").style.visibility = "visible";
-    if (!isMobile) document.getElementById("sideBarContainer").style.display = "block";
     document.getElementById("doodleContainer").style.visibility = "visible";
     document.getElementById("doodle").style.visibility = "visible";
     document.getElementById("info").style.display = "block";
-    // document.getElementById("sideBar").style.display = "block";
-    mapsShown = true;
-    // for picture taking
-    // document.getElementById("mainNav").style.display = "none";
-    // document.getElementById("navMap").style.display = "none";
+
+    // if (!isMobile) {
+        document.getElementById("sideBarContainer").style.display = "block";
+        document.getElementById("directionsButtonContainerMobile").style.display = "block";
+    // }
 }
 
 function hideMaps() {
@@ -74,9 +75,9 @@ function toggleFAQ() {
 function toggleInstructions() {
     showInstructions = !showInstructions;
     if (showInstructions) {
+        hideMaps();
         document.getElementById("instructionsContainer").style.display = "block";
         document.getElementById("directionsButton").innerHTML = "hide steps";
-        hideMaps();
     }
     else {
         showMaps();

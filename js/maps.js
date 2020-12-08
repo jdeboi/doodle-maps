@@ -131,7 +131,7 @@ function addNavMap(center) {
 }
 
 function addGeocoder() {
-    if (isMobile) {
+    // if (isMobile) {
         let geocoder = new MapboxGeocoder({
             accessToken: key,
             flyTo: {
@@ -148,25 +148,25 @@ function addGeocoder() {
             })
         })
         document.getElementById('geocoder').appendChild(geocoder.onAdd(myMap));
-    } else {
-        let geocoder = new MapboxGeocoder({
-            accessToken: key,
-            flyTo: {
-                zoom: zoomMini
-            },
-            mapboxgl: mapboxgl
-        });
-        geocoder.on('result', (result) => {
-            // console.log("RESULT", result.result.center);
-            setCenter(result.result.center[0], result.result.center[1]);
-            myMap.flyTo({
-                center: getCenterArray(),
-                zoom: zoomMain,
-                essential: true
-            })
-        })
-        navMap.addControl(geocoder);
-    }
+    // } else {
+    //     let geocoder = new MapboxGeocoder({
+    //         accessToken: key,
+    //         flyTo: {
+    //             zoom: zoomMini
+    //         },
+    //         mapboxgl: mapboxgl
+    //     });
+    //     geocoder.on('result', (result) => {
+    //         // console.log("RESULT", result.result.center);
+    //         setCenter(result.result.center[0], result.result.center[1]);
+    //         myMap.flyTo({
+    //             center: getCenterArray(),
+    //             zoom: zoomMain,
+    //             essential: true
+    //         })
+    //     })
+    //     navMap.addControl(geocoder);
+    // }
 }
 
 
