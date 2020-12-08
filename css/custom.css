@@ -13,7 +13,7 @@ body {
 }
 #mainNav .navbar-brand {
   font-family: sketch3D, monospace;
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 
 h1 {
@@ -192,6 +192,10 @@ svg {
 
 /* desktop */
 @media (min-width: 500px) {
+  #mainNav .navbar-brand {
+    font-size: 2rem;
+  }
+
   #sideBar {
     left: 0;
     right: 0;
