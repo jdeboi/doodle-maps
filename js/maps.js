@@ -132,22 +132,22 @@ function addNavMap(center) {
 
 function addGeocoder() {
     // if (isMobile) {
-        let geocoder = new MapboxGeocoder({
-            accessToken: key,
-            flyTo: {
-                zoom: zoomMain
-            },
-            mapboxgl: mapboxgl
-        });
-        geocoder.on('result', (result) => {
-            setCenter(result.result.center[0], result.result.center[1]);
-            myMap.flyTo({
-                center: getCenterArray(),
-                zoom: zoomMain,
-                essential: true
-            })
+    let geocoder = new MapboxGeocoder({
+        accessToken: key,
+        flyTo: {
+            zoom: zoomMain
+        },
+        mapboxgl: mapboxgl
+    });
+    geocoder.on('result', (result) => {
+        setCenter(result.result.center[0], result.result.center[1]);
+        myMap.flyTo({
+            center: getCenterArray(),
+            zoom: zoomMain,
+            essential: true
         })
-        document.getElementById('geocoder').appendChild(geocoder.onAdd(myMap));
+    })
+    document.getElementById('geocoder').appendChild(geocoder.onAdd(myMap));
     // } else {
     //     let geocoder = new MapboxGeocoder({
     //         accessToken: key,
@@ -285,6 +285,7 @@ function setCoordinates(path) {
             updateLine(navMap, "route", coordinates);
             addMarkers(coordinates[0], coordinates[coordinates.length - 1]);
             document.getElementById("directionsButton").style.display = "block";
+            document.getElementById("directionsButtonContainerMobile").style.display = "block";
             // console.log("ok", duration, startAddress, endAddress)
         })
 }
@@ -334,7 +335,11 @@ function addMarkers(start, end) {
 }
 
 function htmlInstructions() {
-    var instructionsDiv = document.getElementById("instructions");
+    var instructionsDiv;
+    if (window.innerWidth < 500 || isMobile)
+        instructionsDiv = document.getElementById("instructionsModal");
+    else
+        instructionsDiv = document.getElementById("instructions");
     instructionsDiv.innerHTML = "";
     console.log("ins nums", instructions.length)
     for (const instruction of instructions) {

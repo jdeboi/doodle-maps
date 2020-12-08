@@ -30,7 +30,7 @@ function showMaps() {
 
     // if (!isMobile) {
         document.getElementById("sideBarContainer").style.display = "block";
-        document.getElementById("directionsButtonContainerMobile").style.display = "block";
+        // document.getElementById("directionsButtonContainerMobile").style.display = "block";
     // }
 }
 
@@ -72,16 +72,24 @@ function toggleFAQ() {
     $('#faqModal').modal('toggle');
 }
 
+function toggleModalInstructions() {
+    $('#mobileInstructionsModal').modal('toggle');
+}
+
+
 function toggleInstructions() {
     showInstructions = !showInstructions;
     if (showInstructions) {
         hideMaps();
         document.getElementById("instructionsContainer").style.display = "block";
         document.getElementById("directionsButton").innerHTML = "hide steps";
+        document.getElementById("directionsButtonMobile").innerHTML = "hide steps";
+
     }
     else {
         showMaps();
         document.getElementById("instructionsContainer").style.display = "none";
         document.getElementById("directionsButton").innerHTML = "show steps";
+        document.getElementById("directionsButtonMobile").innerHTML = "show steps";
     }
 }

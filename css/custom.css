@@ -395,6 +395,10 @@ header.masthead {
   color: black;
 }
 
+#mobileInstructionsModal {
+  display: none;
+}
+
 #videoContainer {
   overflow: hidden;
   position: absolute;
