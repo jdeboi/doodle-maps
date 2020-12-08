@@ -1,6 +1,7 @@
 var mapsShown = false;
 var showInstructions = false;
 var isMobile = false;
+var clickedSketch = false;
 // if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
 //     setMobile();
 // }
@@ -22,6 +23,7 @@ function setMobile() {
 function showMaps() {
     mapsShown = true;
     // document.getElementById("introVid").style.display = "none";
+    document.getElementById("loading").style.display = "none";
     document.getElementById("header").style.display = "none";
     document.getElementById("mapContainer").style.visibility = "visible";
     document.getElementById("doodleContainer").style.visibility = "visible";
@@ -57,10 +59,14 @@ function takePics() {
 }
 
 function showLoading() {
-    document.getElementById("header").style.display = "none";
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("navMap").style.pointerEvents = "none";
-
+    clickedSketch = true;
+    if (isDrawing) {
+        showMaps();
+    }
+    else {
+        document.getElementById("header").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+    }
 }
 
 function hideLoading() {

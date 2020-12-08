@@ -29,6 +29,9 @@ function initMaps() {
         .then(addGeocoder)
         .then(() => {
             isDrawing = true;
+            if (clickedSketch) {
+                showMaps();
+            }
         })
         .catch((error) => {
             alert("Sorry, there was an error: " + error);
