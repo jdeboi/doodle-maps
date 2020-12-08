@@ -26,6 +26,7 @@ if (DEV_MODE) {
 function initMaps() {
     initCenter()
         .then(addMaps)
+        .then(addGeocoder)
         .then(() => {
             isDrawing = true;
         })
@@ -74,35 +75,14 @@ function addMainMap(center) {
             resolve("loaded");
         })
 
+
     });
 }
 
-// function addMap(center) {
-//     // Options for map
-//     let options = {
-//         lat: center.lat,
-//         lng: center.lng,
-//         zoom: zoomMain,
-//         style: 'mapbox://styles/mapbox/traffic-night-v2',
-//     };
-//     return new Promise((resolve, reject) => {
-//         myMap = mappa.tileMap(options);
-//         myMap.overlay(canvas, () => {
-//             myMap.map.dragRotate.disable();
-//             myMap.map.touchZoomRotate.disableRotation();
-//             myMap.map.scrollZoom.disable();
-//             myMap.map.flyTo({
-//                 center: [center.lng, center.lat],
-//                 zoom: zoomMain,
-//                 essential: true
-//             });
-//             resolve("finished");
-//         });
-//     });
-// }
 
 function addNavMap(center) {
     return new Promise((resolve, reject) => {
+
         mapboxgl.accessToken = key;
         navMap = new mapboxgl.Map({
             container: 'navMap',
@@ -111,26 +91,6 @@ function addNavMap(center) {
             zoom: zoomMini
         });
 
-        let geocoder = new MapboxGeocoder({
-            accessToken: key,
-            flyTo: {
-                zoom: zoomMini
-            },
-            mapboxgl: mapboxgl
-        });
-        geocoder.on('result',(result) => {
-            console.log("RESULT", result.result.center);
-            setCenter(result.result.center[0], result.result.center[1]);
-            myMap.flyTo({
-                center: getCenterArray(),
-                zoom: zoomMain,
-                essential: true
-            })
-        })
-
-        navMap.addControl(
-            geocoder
-        );
 
 
         // disable map rotation using right click + drag
@@ -170,6 +130,44 @@ function addNavMap(center) {
 
 }
 
+function addGeocoder() {
+    if (isMobile) {
+        let geocoder = new MapboxGeocoder({
+            accessToken: key,
+            flyTo: {
+                zoom: zoomMain
+            },
+            mapboxgl: mapboxgl
+        });
+        geocoder.on('result', (result) => {
+            setCenter(result.result.center[0], result.result.center[1]);
+            myMap.flyTo({
+                center: getCenterArray(),
+                zoom: zoomMain,
+                essential: true
+            })
+        })
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(myMap));
+    } else {
+        let geocoder = new MapboxGeocoder({
+            accessToken: key,
+            flyTo: {
+                zoom: zoomMini
+            },
+            mapboxgl: mapboxgl
+        });
+        geocoder.on('result', (result) => {
+            // console.log("RESULT", result.result.center);
+            setCenter(result.result.center[0], result.result.center[1]);
+            myMap.flyTo({
+                center: getCenterArray(),
+                zoom: zoomMain,
+                essential: true
+            })
+        })
+        navMap.addControl(geocoder);
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////

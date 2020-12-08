@@ -71,14 +71,14 @@
     </div>
   </nav>
   <!-- The video -->
-  <div id="videoContainer">
+  <!-- <div id="videoContainer">
     <video autoplay muted loop id="introVid">
       <source src="./assets/map.mp4" type="video/mp4">
     </video>
-  </div>
+  </div> -->
 
   <!-- Masthead-->
-  <header id="header" class="masthead">
+  <header id="header" class="masthead bgimg">
     <div id="landingPage" class="container h-100">
       <div class="row h-100 align-items-center justify-content-center text-center">
         <div class="col-lg-10 align-self-end">
@@ -87,7 +87,7 @@
         </div>
         <div class="col-lg-8 align-self-baseline">
           <!-- <p class="text-white tagline mb-5">Sketch your adventure!</p> -->
-          <div class="btn btn-primary btn-xl js-scroll-trigger" onClick="showMaps()">Sketch your adventure!</div>
+          <div class="btn btn-primary btn-xl js-scroll-trigger" onClick="showMaps()">doodle!</div>
         </div>
       </div>
     </div>
@@ -105,32 +105,37 @@
   <div id="doodleContainer"><canvas id="doodle" resize ata-paper-hidpi="on"></canvas></div>
   <div id="mapContainer">
     <div id="map"></div>
+    <div id="geocoder" class="geocoder"></div>
   </div>
 
-  <div id="sideBar">
+  <div id="sideBarContainer">
+    <div id="sideBar">
 
-    <div id="navMapContainer" class="sideBar-item">
-      <!-- <h6>canvas location:</h6> -->
-      <!-- <hr /> -->
-      <div id="navMap"></div>
+      <div id="navMapContainer" class="sideBar-item">
+        <h6>canvas location:</h6>
+        <!-- <hr /> -->
+        <div id="navMap"></div>
 
-    </div>
-    <div id="tripDetails" class="sideBar-item">
-      <!-- <h6>walking directions</h6> -->
-      <!-- <hr /> -->
-      <span id="duration"></span><span id="distance"></span>
-      <div id="addresses">
-        <div><span id="startAddress"></span></div>
-        <div><span id="endAddress"></span></div>
       </div>
-      <button id="directionsButton" type="button" class="btn btn-light" onclick="toggleInstructions()">show
-        steps</button>
-    </div>
+      <div id="tripDetails" class="sideBar-item">
+        <h6>trip details:</h6>
+        <!-- <hr /> -->
+        <span id="duration"></span><span id="distance"></span>
+        <div id="addresses">
+          <div><span id="startAddress"></span></div>
+          <div><span id="endAddress"></span></div>
+        </div>
 
+      </div>
+      <div id="directionsButtonContainer">
+        <button id="directionsButton" type="button" class="btn btn-primary" onclick="toggleInstructions()">show
+          steps</button>
+      </div>
+    </div>
   </div>
 
   <div id="instructionsContainer">
-    <h5>Directions</h5>
+    <h6>walking directions:</h6>
     <div id="instructions"></div>
   </div>
 

@@ -1,13 +1,28 @@
-
 var mapsShown = false;
 var showInstructions = false;
+var isMobile = false;
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    setMobile();
+}
+else if (window.innerWidth < 550) {
+    setMobile();
+}
+
 // takePics();
 
+function setMobile() {
+    console.log("MOBILE")
+    isMobile = true;
+    // document.getElementById("introVid").style.display = "none";
+    // document.getElementById("header").classList.add("bgimg");
+    document.getElementById("sideBarContainer").style.display = "none";
+}
+
 function showMaps() {
-    document.getElementById("introVid").style.display = "none";
+    // document.getElementById("introVid").style.display = "none";
     document.getElementById("header").style.display = "none";
     document.getElementById("mapContainer").style.visibility = "visible";
-    document.getElementById("sideBar").style.display = "block";
+    if (!isMobile) document.getElementById("sideBarContainer").style.display = "block";
     document.getElementById("doodleContainer").style.visibility = "visible";
     document.getElementById("doodle").style.visibility = "visible";
     document.getElementById("info").style.display = "block";
@@ -33,7 +48,7 @@ function setDevDom() {
 function takePics() {
     document.getElementById("header").style.display = "none";
     document.getElementById("mapContainer").style.visibility = "visible";
-    document.getElementById("sideBar").style.display = "none";
+    document.getElementById("sideBarContainer").style.display = "none";
     document.getElementById("doodleContainer").style.visibility = "visible";
     document.getElementById("doodle").style.visibility = "visible";
     document.getElementById("info").style.display = "block";
@@ -67,8 +82,5 @@ function toggleInstructions() {
         showMaps();
         document.getElementById("instructionsContainer").style.display = "none";
         document.getElementById("directionsButton").innerHTML = "show steps";
-        // document.getElementById("mapContainer").style.display = "block";
-        // document.getElementById("doodleContainer").style.visibility = "visible";
-        // document.getElementById("instructions").style.display = "none";
     }
 }
