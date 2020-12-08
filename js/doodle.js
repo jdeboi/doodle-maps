@@ -14,7 +14,8 @@ canvas.addEventListener('mousemove', drag);
 // Create a Paper.js Path to draw a line into it:
 var path = new paper.Path();
 // Give the stroke a color
-path.strokeColor = 'white';
+path.strokeColor = 'black'; //'#ff3700';
+path.strokeWidth = 10;
 var numMapboxCalls = 5;
 var mouseIsDown = false;
 
@@ -34,10 +35,10 @@ function down(event) {
             path.removeSegments();
             path.selected = false;
         }
-        path.strokeColor = 'white';
+        // path.strokeColor = 'white';
 
         // Select the path, so we can see its segment points:
-        path.fullySelected = true;
+        // path.fullySelected = true;
 
     }
 }

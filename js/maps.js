@@ -15,6 +15,7 @@ let startAddress, endAddress, distance, duration, instructions;
 
 // let canvas;
 
+var markerStart, markerEnd;
 
 initMaps();
 
@@ -48,6 +49,12 @@ function setCenter(lng, lat) {
 }
 
 function addMaps(c) {
+    var elStart = document.createElement('div');
+    elStart.className = 'markerStart';
+    var elEnd = document.createElement('div');
+    elEnd.className = 'markerEnd';
+    markerStart = new mapboxgl.Marker(elStart);
+    markerEnd = new mapboxgl.Marker(elEnd);
     return Promise.all([addMainMap(c), addNavMap(c)]);
 }
 
@@ -104,6 +111,26 @@ function addNavMap(center) {
             zoom: zoomMini
         });
 
+        let geocoder = new MapboxGeocoder({
+            accessToken: key,
+            flyTo: {
+                zoom: zoomMini
+            },
+            mapboxgl: mapboxgl
+        });
+        geocoder.on('result',(result) => {
+            console.log("RESULT", result.result.center);
+            setCenter(result.result.center[0], result.result.center[1]);
+            myMap.flyTo({
+                center: getCenterArray(),
+                zoom: zoomMain,
+                essential: true
+            })
+        })
+
+        navMap.addControl(
+            geocoder
+        );
 
 
         // disable map rotation using right click + drag
@@ -114,6 +141,8 @@ function addNavMap(center) {
             isDrawing = false;
             if (DEV_MODE) console.log("moving map");
             setCenter(e.lngLat.wrap().lng, e.lngLat.wrap().lat);
+            console.log("ONE", e.lngLat.wrap().lng, e.lngLat.wrap().lat);
+            console.log("TWO", getCenterArray())
             console.log("SHYYY", center)
             navMap.flyTo({
                 center: getCenterArray(),
@@ -224,14 +253,17 @@ function setCoordinates(path) {
             var coordinates = [];
             instructions = [];
             console.log("REZ", JSON.parse(responses[0].responseText))
-            startAddress = JSON.parse(responses[0].responseText).routes[0].legs[0].steps[0].name;
-            if (startAddress == "") startAddress = JSON.parse(responses[0].responseText).routes[0].legs[0].steps[0].geometry[0].coordinates;
-            document.getElementById("startAddress").innerText = "start: " + startAddress;
-            let legL = JSON.parse(responses[responses.length - 1].responseText).routes[0].legs.length;
-            let lastLeg = JSON.parse(responses[responses.length - 1].responseText).routes[0].legs[legL - 1];
-            endAddress = lastLeg.steps[lastLeg.steps.length - 1].name;
-            if (endAddress == "") endAddress = lastLeg.steps[lastLeg.steps.length - 1].geometry[0].coordinates;
-            document.getElementById("endAddress").innerText = "end: " + endAddress;
+
+            ////////////////// start & end addresses
+            // startAddress = JSON.parse(responses[0].responseText).routes[0].legs[0].steps[0].name;
+            // if (startAddress == "") startAddress = JSON.parse(responses[0].responseText).routes[0].legs[0].steps[0].geometry[0].coordinates;
+            // document.getElementById("startAddress").innerText = "start: " + startAddress;
+            // let legL = JSON.parse(responses[responses.length - 1].responseText).routes[0].legs.length;
+            // let lastLeg = JSON.parse(responses[responses.length - 1].responseText).routes[0].legs[legL - 1];
+            // endAddress = lastLeg.steps[lastLeg.steps.length - 1].name;
+            // if (endAddress == "") endAddress = lastLeg.steps[lastLeg.steps.length - 1].geometry[0].coordinates;
+            // document.getElementById("endAddress").innerText = "end: " + endAddress;
+
             distance = 0;
             duration = 0;
 
@@ -253,7 +285,7 @@ function setCoordinates(path) {
 
             updateLine(myMap, "route", coordinates);
             updateLine(navMap, "route", coordinates);
-
+            addMarkers(coordinates[0], coordinates[coordinates.length - 1]);
             document.getElementById("directionsButton").style.display = "block";
             // console.log("ok", duration, startAddress, endAddress)
         })
@@ -292,6 +324,17 @@ function setInstructions(route) {
     htmlInstructions();
 }
 
+function addMarkers(start, end) {
+    markerStart.setLngLat(start);
+    markerEnd.setLngLat(end);
+
+    console.log("START", start, end)
+
+    // Ensure it's added to the map. This is safe to call if it's already added.
+    markerStart.addTo(myMap);
+    markerEnd.addTo(myMap);
+}
+
 function htmlInstructions() {
     var instructionsDiv = document.getElementById("instructions");
     instructionsDiv.innerHTML = "";
@@ -313,19 +356,11 @@ function htmlInstructions() {
         }
 
     }
-    const newDiv = document.createElement("div"); 
+    const newDiv = document.createElement("div");
     newDiv.textContent = "You have arrived!";
     instructionsDiv.appendChild(newDiv);
 }
 
-function checkDirections(directions) {
-    console.log((numInstruction++) + " check directions")
-    if (DIRECTIONS_ON) {
-        let coordinates = directions.map(x => x.coord);
-        return coordinates;
-    }
-    return null;
-}
 
 function getDuration(seconds, dec) {
     let mins = +seconds / 60;

@@ -1,8 +1,10 @@
 
 var mapsShown = false;
 var showInstructions = false;
+// takePics();
 
 function showMaps() {
+    document.getElementById("introVid").style.display = "none";
     document.getElementById("header").style.display = "none";
     document.getElementById("mapContainer").style.visibility = "visible";
     document.getElementById("sideBar").style.display = "block";
@@ -26,6 +28,16 @@ function setDevDom() {
     document.getElementById("header").style.display = "none";
     document.getElementById("navMapContainer").style.display = "block";
     document.getElementById("mapContainer").style.display = "block";
+}
+
+function takePics() {
+    document.getElementById("header").style.display = "none";
+    document.getElementById("mapContainer").style.visibility = "visible";
+    document.getElementById("sideBar").style.display = "none";
+    document.getElementById("doodleContainer").style.visibility = "visible";
+    document.getElementById("doodle").style.visibility = "visible";
+    document.getElementById("info").style.display = "block";
+    document.getElementById("mainNav").style.display = "none";
 }
 
 function showLoading() {

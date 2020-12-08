@@ -8,6 +8,9 @@ body {
   box-sizing: border-box;
 }
 
+#mainNav {
+  background-size: 2200px 2200px;
+}
 #mainNav .navbar-brand {
   font-family: sketch3D, monospace;
   font-size: 2rem;
@@ -158,9 +161,13 @@ svg {
   box-shadow: 10px 10px 30px rgb(124, 124, 124);
 
   position: absolute;
-  background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
-  background-size: 2200px 2200px;
 
+  background-size: 2200px 2200px;
+}
+
+.rainbowBackground {
+  
+  background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
   -webkit-animation: rainbow 18s ease infinite;
   -z-animation: rainbow 18s ease infinite;
   -o-animation: rainbow 18s ease infinite;
@@ -224,6 +231,9 @@ svg {
 #tripDetails {
   padding-top: 70px;
   flex: 1;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 2px solid black;
 }
 
 #tripDetails button {
@@ -257,10 +267,37 @@ svg {
 }
 
 #navMap {
-  width: 256px;
-  height: 256px;
+  width: 264px;
+  height: 264px;
   border: 2px solid black;
   border-radius: 6px;
+}
+
+.markerStart {
+  /* background-image: url('../assets/images/marker.png'); */
+  /* background-size: 25px 25px; */
+  background: rgba(173, 216, 230);
+  /* background-repeat: no-repeat; */
+  background-position: 12px 0px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 8px solid blue;
+  /* background: blue; */
+  cursor: pointer;
+}
+
+.markerEnd {
+  background-image: url('../assets/images/marker.png');
+  background-size: 25px 40px;
+  background-repeat: no-repeat;
+  background-position: 12px 0px;
+  margin-top: -10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  /* background: blue; */
+  cursor: pointer;
 }
 
 #info {
@@ -270,8 +307,8 @@ svg {
 header.masthead {
   padding-top: 10rem;
   padding-bottom: calc(10rem - 4.5rem);
-  background: linear-gradient(to bottom, rgba(20, 77, 66, 0.8) 0%, rgba(87, 78, 72, 0.8) 100%), url("../images/bg2.png");
-  /* background: linear-gradient(to bottom, rgba(255, 241, 194, 1) 0%, rgba(255, 241, 194, .5) 20%, rgba(20, 77, 66, 0.8) 50%,  rgba(20, 77, 66, 0.8) 100%), url("../images/bg.png"); */
+  /* background: linear-gradient(to bottom, rgba(20, 77, 66, 0.8) 0%, rgba(87, 78, 72, 0.8) 100%), url("../assets/images/bg2.png"); */
+  /* background: linear-gradient(to bottom, rgba(255, 241, 194, 1) 0%, rgba(255, 241, 194, .5) 20%, rgba(20, 77, 66, 0.5) 50%,  rgba(20, 77, 66, 0.5) 100%); */
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: scroll;
@@ -284,22 +321,37 @@ header.masthead {
   color: black;
 }
 
+#videoContainer {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#introVid {
+  height: 100%;
+  width: 160vh; /* 100 * 2880 / 1800 */
+  min-width: 100%;
+  min-height: 62.5vw; /* 100 * 1800/2880 */
+}
+
 @font-face {
   font-family: sketchFont;
-  src: url(../fonts/KBSketch.ttf);
+  src: url(../assets/fonts/KBSketch.ttf);
 }
 
 @font-face {
   font-family: sketch3D;
-  src: url(../fonts/Sketch3D.otf);
+  src: url(../assets/fonts/Sketch3D.otf);
 }
 
 @font-face {
   font-family: sketchy;
-  src: url(../fonts/Sketchy.otf);
+  src: url(../assets/fonts/Sketchy.otf);
 }
 
 @font-face {
   font-family: sketchMatch;
-  src: url(../fonts/SketchMatch.ttf);
+  src: url(../assets/fonts/SketchMatch.ttf);
 }
