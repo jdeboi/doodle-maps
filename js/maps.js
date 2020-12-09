@@ -6,7 +6,7 @@ let myMap, navMap;
 const zoomMain = 14;
 const zoomMini = 11.7;
 let isDrawing = false;
-var center;
+var center = {lat: 0, lng: 0};
 
 let startAddress, endAddress, distance, duration, instructions;
 // Create an instance of MapboxGL
@@ -25,6 +25,9 @@ if (DEV_MODE) {
 
 function initMaps() {
     initCenter()
+        .then((c) => {
+            setCenter(c.lng, c.lat);
+        })
         .then(addMaps)
         .then(addGeocoder)
         .then(() => {
@@ -68,7 +71,7 @@ function addMainMap(center) {
         myMap = new mapboxgl.Map({
             container: 'map',
             style: "mapbox://styles/jdeboi/ck7f9ph6i0sr61irv7crq6sno",
-            center: center, // starting position
+            center: getCenterArray(), // starting position
             zoom: zoomMain
         });
         myMap.dragRotate.disable();
@@ -90,7 +93,7 @@ function addNavMap(center) {
         navMap = new mapboxgl.Map({
             container: 'navMap',
             style: 'mapbox://styles/jdeboi/ck6ygg96d16gg1im66n6i13ob',
-            center: [center.lng, center.lat],
+            center: getCenterArray(),
             zoom: zoomMini
         });
 
@@ -104,9 +107,9 @@ function addNavMap(center) {
             isDrawing = false;
             if (DEV_MODE) console.log("moving map");
             setCenter(e.lngLat.wrap().lng, e.lngLat.wrap().lat);
-            console.log("ONE", e.lngLat.wrap().lng, e.lngLat.wrap().lat);
-            console.log("TWO", getCenterArray())
-            console.log("SHYYY", center)
+            // console.log("ONE", e.lngLat.wrap().lng, e.lngLat.wrap().lat);
+            // console.log("TWO", getCenterArray())
+            // console.log("SHYYY", center)
             navMap.flyTo({
                 center: getCenterArray(),
                 zoom: zoomMini,
@@ -185,8 +188,9 @@ async function initCenter() {
     let promiseTimeout = new Promise((resolve, reject) => {
         let wait = setTimeout(() => {
             clearTimeout(wait);
-            center = getNolaCenter();
-            resolve(center);
+            let c = getNolaCenter();
+            console.log("TIMEOUT")
+            resolve(c);
         }, t)
     })
     return Promise.race([
@@ -198,14 +202,14 @@ async function initCenter() {
 async function setBrowserCenter() {
     try {
         let position = await getPosition();
-        if (DEV_MODE) console.log("POS", position);
-        center = { lng: position.coords.longitude, lat: position.coords.latitude };
-        return center;
+        console.log("POS", position);
+        let c = { lng: position.coords.longitude, lat: position.coords.latitude };
+        return c;
     }
     catch (error) {
-        console.log(error);
-        center = getNolaCenter();
-        return center;
+        console.log("NOLA", error);
+        let c = getNolaCenter();
+        return c;
     }
 }
 
